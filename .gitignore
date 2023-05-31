@@ -1,0 +1,9 @@
+.vs
+.vscode
+node_modules
+client/dlmrepo
+server/repo
+server/orbitdb
+dist
+out
+*.log*

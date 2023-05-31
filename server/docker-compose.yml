@@ -1,0 +1,64 @@
+version: '3.1'
+
+services:
+  ipfs:
+    build:
+      context: .
+      dockerfile: DockerfileGateway
+    volumes:
+      - ipfs_data:/data/ipfs
+    environment:
+      - IPFS_PATH=/data/ipfs
+    ports:
+      # Swarm
+      - 4008:4008
+
+      - 4002:4002/tcp
+      - 4002:4002/udp
+      
+      - 5005:5005 # API port
+      - 8080:8080 # HTTP Gateway
+  
+  cluster:
+    image: ipfs/ipfs-cluster:latest
+    ports:
+      - 9094:9094 # Cluster api
+      - 9096:9096 # Cluster peer port
+      - 9010:9010 # Cluster pinning service
+    volumes:
+      - cluster_data:/data/ipfs-cluster
+    environment:
+      CLUSTER_PEERNAME: dlmclusternode
+      CLUSTER_SECRET: 10a6730bb197aa977759b4bf3e3944bd16401131760e0ba9f36b4d38ac055828
+      CLUSTER_CRDT_TRUSTEDPEERS: '*' # Trust all peers in Cluster
+
+      CLUSTER_IPFSHTTP_NODEMULTIADDRESS: /dns4/ipfs/tcp/5005
+      CLUSTER_LISTEN_MULTIADDRESS: /ip4/0.0.0.0/tcp/9096
+      CLUSTER_RESTAPI_HTTPLISTENMULTIADDRESS: /ip4/0.0.0.0/tcp/9094 # Expose API
+      CLUSTER_PINSVCAPI_HTTPLISTENMULTIADDRESS: /ip4/0.0.0.0/tcp/9010
+      CLUSTER_PINSVCAPI_BASICAUTHCREDENTIALS: "admin:admin"
+      
+      CLUSTER_MONITORPINGINTERVAL: 2s # Speed up peer discovery
+
+  star:
+    image: libp2p/js-libp2p-webrtc-star:latest
+    ports:
+     - 9090:9090
+    restart: unless-stopped
+
+  node:
+    build:
+      context: .
+      dockerfile: DockerfileNode
+    volumes:
+      - orbitdb_data:/app/orbitdb
+    environment:
+      - DB_ADDR=moddb
+    # ports:
+    #   - 4001:4001
+
+volumes:
+  ipfs_data:
+  orbitdb_data:
+  ipfsjs_data:
+  cluster_data:

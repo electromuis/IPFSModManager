@@ -1,0 +1,11 @@
+FROM ipfs/kubo:v0.20.0
+
+ADD ipfs-config.sh /container-init.d/ipfs-config.sh
+RUN chmod a+x /container-init.d/ipfs-config.sh
+
+EXPOSE 8080
+EXPOSE 4002
+EXPOSE 5005
+EXPOSE 4008
+
+CMD ["daemon", "--migrate=true", "--agent-version-suffix=docker", "--enable-pubsub-experiment"]

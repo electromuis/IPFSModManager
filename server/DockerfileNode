@@ -1,0 +1,9 @@
+FROM node:current
+
+WORKDIR /app
+COPY package.json /app
+RUN npm i --omit=dev
+
+COPY index.mjs /app 
+
+ENTRYPOINT [ "node", "index.mjs" ]
