@@ -1,7 +1,7 @@
 <template>
     <div class="static bg-blue w-full flex justify-center py-2">
         <div class="flex">
-            <img src="./assets/logo.png" />
+            <!-- <img src="./assets/logo.png" /> -->
             <div>
                 <span class="text-lightblue font-bold text-3xl">STEPMANIA</span><br/>
                 <span class="font-bold text-3xl">DOWNLOAD</span><br/>

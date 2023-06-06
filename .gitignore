@@ -7,3 +7,4 @@ server/orbitdb
 dist
 out
 *.log*
+client/config.json

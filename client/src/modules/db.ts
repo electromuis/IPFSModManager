@@ -1,18 +1,13 @@
 import OrbitDB from 'orbit-db';
-import config from './config';
+import {config} from './config';
 import fs from 'fs';
-import { multiaddr } from '@multiformats/multiaddr'
 import concurrently from 'concurrently';
-import {closeSources} from './modmodule'
+import {closeSources} from './modwrapper'
 import {exec} from 'child_process'
 
-import Logger from 'logplease';
-Logger.setLogLevel('DEBUG');
-
-export const clusterBin = 'bin\\ipfs-cluster-follow.exe'
-export const ipfsBin = 'bin\\ipfs.exe'
-
-const mountBin = 'bin\\ipfs-mount.exe'
+export const clusterBin = 'resources\\bin\\ipfs-cluster-follow.exe'
+export const ipfsBin = 'resources\\bin\\ipfs.exe'
+const mountBin = 'resources\\bin\\ipfs-mount.exe'
 
 let emitter: any = null;
 export function setEmitter(e: any) {
@@ -95,7 +90,7 @@ export async function initDB() {
 export async function closeDB() {
   taskHandles.slice().reverse().forEach((handle) => {
     handle.kill()
-    console.log('Killed task')
+    console.log('Killed task', handle)
   })
   console.log('Closed 1')
 

@@ -1,10 +1,13 @@
 {
-  "name": "app10",
+  "name": "ipfs-mod-manager",
   "version": "1.0.0",
-  "description": "An Electron application with Vue and TypeScript",
+  "description": "Successor to Stepmania Download Manager. Decentralized mod manager via IPFS.",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://www.electronjs.org",
+  "author": "Electromuis",
+  "homepage": "https://github.com/electromuis/IPFSModManager",
+  "build": {
+    "extraResources": ["./bin/**"]
+  },
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts,.vue --fix",
@@ -24,7 +27,6 @@
     "@electron-toolkit/utils": "^1.0.2",
     "concurrently": "^8.0.1",
     "electron-updater": "^5.3.0",
-    "go-ipfs": "^0.20.0",
     "ipfs-http-client": "^60.0.1",
     "ipfsd-ctl": "^13.0.0",
     "orbit-db": "^0.29.0"

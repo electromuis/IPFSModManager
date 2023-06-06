@@ -1,17 +1,17 @@
-import {Mod, ModModule} from '../modmodule'
+import {Mod, ModWrapper} from '../modwrapper'
 import {ModSourceAbs} from './modsource'
 import {ipfs, spawnTasks, clusterBin} from '../db'
 import { CID } from 'multiformats/cid'
 import {exec} from 'child_process'
-import config from '../config'
+import {config} from '../config'
 import fs from 'fs'
 
-type ClusterParams = {
+export type ClusterParams = {
   root: string,
   url: string
   token: string,
   name: string,
-  joinconfig: string
+  joinconfig?: string
 }
 
 export class ClusterSource extends ModSourceAbs {
@@ -98,7 +98,7 @@ export class ClusterSource extends ModSourceAbs {
         _id: modId,
         name: modName,
         path: modId,
-        sources: ['cluster', 'cluster-' + pin.status]
+        sources: ['cluster-' + pin.status]
       }
 
       mods.push(mod)
@@ -107,7 +107,7 @@ export class ClusterSource extends ModSourceAbs {
     return mods
   }
 
-  async addMod(mod: ModModule) {
+  async addMod(mod: ModWrapper) {
     const pinName = this.params.root + mod.mod._id
 
 
@@ -117,7 +117,7 @@ export class ClusterSource extends ModSourceAbs {
     })
     console.log("Removed old pins")
 
-    await ipfs.api.pin.remote.add(CID.parse(mod.mod.cid), {
+    await ipfs.api.pin.remote.add(CID.parse(mod.mod.cid as string), {
       service: this.params.name,
       name: pinName,
       background: true

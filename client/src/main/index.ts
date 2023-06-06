@@ -1,9 +1,9 @@
-import { app, shell, BrowserWindow, ipcMain, dialog, session } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, dialog } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import {closeDB, initDB, setEmitter} from '../modules/db'
-import {ModModule, loadSources} from '../modules/modmodule'
+import {ModWrapper, loadSources, getSources} from '../modules/modwrapper'
 
 function createWindow(): void {
   // Create the browser window.
@@ -69,8 +69,12 @@ app.whenReady().then(async () => {
   })
 
   ipcMain.handle('getPacks', async () => {
-    const mods = await ModModule.getAllMods()
-    return mods.map(mod => mod.mod)
+    const mods = await ModWrapper.getAllMods()
+    return mods.map(mod => mod.getData())
+  })
+
+  ipcMain.handle('getSources', async () => {
+    return getSources()
   })
 
   try {
@@ -83,14 +87,14 @@ app.whenReady().then(async () => {
     return
   }
 
-  ipcMain.handle('installPack', (event, pack) => {
-    const mod = new ModModule(pack)
-    mod.install()
+  ipcMain.handle('installPack', ({}, pack, source) => {
+    const mod = new ModWrapper(pack)
+    return mod.addTo(source)
   })
 
-  ipcMain.handle('uninstallPack', (event, pack) => {
-    const mod = new ModModule(pack)
-    mod.uninstall()
+  ipcMain.handle('uninstallPack', ({}, pack, source) => {
+    const mod = new ModWrapper(pack)
+    return mod.removeFrom(source)
   })
 
   ipcMain.handle('selectFolder', async () => {
@@ -103,13 +107,13 @@ app.whenReady().then(async () => {
       return
     }
 
-    const mod = await ModModule.fromFolder(folder[0])
+    const mod = await ModWrapper.fromFolder(folder[0])
     return {mod: mod.mod, folder: folder[0]}
   })
 
-  ipcMain.handle('uploadPack', (event, folder, pack) => {
+  ipcMain.handle('uploadPack', ({}, folder, pack) => {
     console.log("Uploading: ", folder, pack)
-    const mod = new ModModule(pack)
+    const mod = new ModWrapper(pack)
     mod.upload(folder)
   })
 

@@ -16,8 +16,8 @@ services:
       - 4002:4002/tcp
       - 4002:4002/udp
       
-      - 5005:5005 # API port
-      - 8080:8080 # HTTP Gateway
+      - 5001:5001 # API port
+      # - 8080:8080 # HTTP Gateway
   
   cluster:
     image: ipfs/ipfs-cluster:latest
@@ -56,6 +56,15 @@ services:
       - DB_ADDR=moddb
     # ports:
     #   - 4001:4001
+
+  orbitdb:
+    image: orbitdb/orbit-db-http-api:latest
+    depends_on:
+      - ipfs
+    command: ["node", "src/cli.js", "api", "--ipfs-host=ipfs", "--ipfs-port=5001", "--api-port=3000", "--no-https", "--http1"]
+    ports:
+      - 3000:3000
+      - 8080:8080
 
 volumes:
   ipfs_data:

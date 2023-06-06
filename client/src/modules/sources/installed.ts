@@ -1,9 +1,8 @@
-import {Mod, ModModule} from '../modmodule'
+import {Mod, ModWrapper} from '../modwrapper'
 import {ModSourceAbs} from './modsource'
 import fs from 'fs'
 import path from 'path'
-import {ipfs} from '../db'
-import config from '../config'
+import {config} from '../config'
 
 export type InstalledParams = {
   gamedir: string,
@@ -38,7 +37,7 @@ export class InstalledSource extends ModSourceAbs {
           cid,
           path: modPath,
           name: file.name,
-          sources: ['installed']
+          sources: []
         }
 
         // if(fs.existsSync(path.join(filePath, 'modinfo.json'))) {
@@ -54,7 +53,7 @@ export class InstalledSource extends ModSourceAbs {
     return packs
   }
 
-  async addMod(mod: ModModule) {
+  async addMod(mod: ModWrapper) {
     const packFolder = (this.params.gamedir + mod.mod.path.trim()).replace(/\//g, '\\')
     if(fs.existsSync(packFolder)) {
       console.log("Pack already installed")
@@ -71,7 +70,7 @@ export class InstalledSource extends ModSourceAbs {
     fs.symlinkSync(packTarget, packFolder, 'junction')
   }
 
-  async removeMod(mod: ModModule) {
+  async removeMod(mod: ModWrapper) {
     const packFolder = (this.params.gamedir + mod.mod.path.trim()).replace(/\//g, '\\')
     if(!fs.existsSync(packFolder)) {
       console.log("Pack not even installed")

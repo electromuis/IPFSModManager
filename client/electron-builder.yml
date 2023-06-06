@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: app10
+appId: com.electromuis.ipfs-mod-manager
+productName: ipfs-mod-manager
 directories:
   buildResources: build
 files:

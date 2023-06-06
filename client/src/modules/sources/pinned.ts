@@ -1,7 +1,7 @@
-import {Mod, ModModule} from '../modmodule'
+import {Mod, ModWrapper} from '../modwrapper'
 import {ModSourceAbs} from './modsource'
 import {ipfs, ipfsBin} from '../db'
-import config from '../config'
+import {config} from '../config'
 import { spawn } from 'child_process';
 import fs from 'fs';
 
@@ -37,7 +37,7 @@ export class PinnedSource extends ModSourceAbs {
     return packs
   }
 
-  async addMod(mod: ModModule) {
+  async addMod(mod: ModWrapper) {
     const adder = spawn(ipfsBin, [
       'pin',
       'add',
@@ -82,7 +82,7 @@ export class PinnedSource extends ModSourceAbs {
       await this.installMfs(mod)
   }
 
-  async installMfs(mod: ModModule) {
+  async installMfs(mod: ModWrapper) {
     try {
       await ipfs.api.files.cp(`/ipfs/${mod.mod.cid}`, `${this.params.mfsroot}/${mod.mod.path}`, { parents: true })
 

@@ -1,11 +1,11 @@
-import {Mod, ModModule} from '../modmodule'
+import {Mod, ModWrapper} from '../modwrapper'
 import {emit} from '../db'
 
 export abstract class ModSourceAbs {
   abstract getMods(): Promise<Mod[]>
-  abstract addMod(mod: ModModule): Promise<void>
+  abstract addMod(mod: ModWrapper): Promise<void>
 
-  async removeMod(mod: ModModule) {}
+  async removeMod({}: ModWrapper) {}
   async close() { }
 
   emit(type) {

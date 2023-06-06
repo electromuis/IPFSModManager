@@ -4,10 +4,11 @@ import { electronAPI } from '@electron-toolkit/preload'
 // Custom APIs for renderer
 const api = {
   getPacks: () => ipcRenderer.invoke('getPacks'),
-  installPack: (pack) => ipcRenderer.invoke('installPack', pack),
-  uninstallPack: (pack) => ipcRenderer.invoke('uninstallPack', pack),
+  installPack: (pack, sourceName) => ipcRenderer.invoke('installPack', pack, sourceName),
+  uninstallPack: (pack, sourceName) => ipcRenderer.invoke('uninstallPack', pack, sourceName),
   uploadPack: (folder, pack) => ipcRenderer.invoke('uploadPack', folder, pack),
-  selectFolder: () => ipcRenderer.invoke('selectFolder')
+  selectFolder: () => ipcRenderer.invoke('selectFolder'),
+  getSources: () => ipcRenderer.invoke('getSources')
 }
 
 ipcRenderer.on('pack-update', () => {

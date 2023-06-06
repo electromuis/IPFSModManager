@@ -2,7 +2,7 @@
   <LayoutMain>
     <UploadForm></UploadForm>
     <div class="packlist">
-      <Pack v-for="pack in packs" :key="pack._id" :pack="pack"></Pack>
+      <Pack v-for="pack in packList" :key="pack._id" :pack="pack"></Pack>
     </div>
   </LayoutMain>
 </template>
@@ -18,8 +18,22 @@ export default {
     UploadForm,
     LayoutMain
   },
+  computed: {
+    packList() {
+      return this.packs.sort((a, b) => {
+        if (a.name < b.name) {
+          return -1
+        }
+        if (a.name > b.name) {
+          return 1
+        }
+        return 0
+      })
+    }
+  },
   async created() {
     this.packs = await api.getPacks()
+
     const me = this
     electron.ipcRenderer.on('pack-update', async () => {
       console.log('Pack update 2')

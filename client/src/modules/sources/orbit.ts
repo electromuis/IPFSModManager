@@ -1,10 +1,10 @@
-import {Mod, ModModule} from '../modmodule'
-import {odb, ipfs} from '../db'
+import {Mod, ModWrapper} from '../modwrapper'
+import {odb} from '../db'
 import {ModSourceAbs} from './modsource'
-import { resolve } from 'path'
 
 export type OrbitParams = {
-  dburl: string
+  dburl: string,
+  writable: boolean
 }
 
 export class OrbitSource extends ModSourceAbs {
@@ -45,12 +45,12 @@ export class OrbitSource extends ModSourceAbs {
     return packs.map(p => {
       return {
         ...p,
-        sources: ['db']
+        sources: []
       }
     })
   }
 
-  async addMod(mod: ModModule) {
+  async addMod(mod: ModWrapper) {
     await this.initialized
 
     await this.db.put(mod.mod)
