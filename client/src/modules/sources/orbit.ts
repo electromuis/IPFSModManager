@@ -23,24 +23,32 @@ export class OrbitSource extends ModSourceAbs {
   }
 
   async init() {
+    console.log("Opening: ", this.params.dburl)
     this.db = await odb.open(this.params.dburl)
 
     console.log("ODB: ", this.db.address.toString())
     const me = this
 
     this.db.events.on('replicated', () => {
-      console.log("Replicated")
+      console.log("DB replicated")
       me.emit('pack-update');
     })
 
-    await this.db.load()
+    this.db.events.on("update", async entry => {
+      console.log("DB update: ", entry)
+      me.emit('pack-update');
+    })
+
+    // await this.db.load()
     me.emit('pack-update');
   }
 
   async getMods() {
     await this.initialized
 
-    const packs:Mod[] = this.db.query(() => true)
+    const packs:Mod[] = await this.db.query(() => true)
+
+    console.log("Packs: ", packs)
 
     return packs.map(p => {
       return {
@@ -51,9 +59,12 @@ export class OrbitSource extends ModSourceAbs {
   }
 
   async addMod(mod: ModWrapper) {
+    
     await this.initialized
+    console.log("Adding mod to db", mod);
 
-    await this.db.put(mod.mod)
+    const result = await this.db.put(mod.mod)
+    console.log("Added mod: ", result);
   }
 
 }

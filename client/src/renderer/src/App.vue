@@ -35,7 +35,7 @@ export default {
     this.packs = await api.getPacks()
 
     const me = this
-    electron.ipcRenderer.on('pack-update', async () => {
+    window.ipcRenderer.on('pack-update', async () => {
       console.log('Pack update 2')
       me.packs = await api.getPacks()
     })

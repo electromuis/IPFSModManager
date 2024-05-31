@@ -1,7 +1,8 @@
 import { spawn } from 'child_process';
 import {SourceConfig, config} from './config';
 import path from 'path';
-import {ipfsBin, emit} from './db'
+import {emit} from './db'
+import * as kubo from 'kubo'
 import glob from 'glob';
 
 import { InstalledSource} from './sources/installed'
@@ -12,6 +13,7 @@ import { ClusterSource } from './sources/cluster';
 let sources = {}
 
 export function getSource(source: SourceConfig) {
+  console.log("Getting source", source.name, source.type)
   if(!sources[source.name]) {
     switch(source.type) {
       case 'installed':
@@ -30,6 +32,8 @@ export function getSource(source: SourceConfig) {
         if(source.cluster)
           sources[source.name] = new ClusterSource(source.cluster)
         break
+      default:
+        throw new Error("Unknown source type: " + source.type)
     }
   }
 
@@ -111,9 +115,10 @@ export class ModWrapper {
   async addTo(sourceName: string) {
     const sourceConfig = config.sources.find(s => s.name == sourceName)
     if(!sourceConfig) {
-      throw new Error("Source not found")
+      console.log("Source not found: ", sourceName)
+    } else {
+      await getSource(sourceConfig).addMod(this)
     }
-    await getSource(sourceConfig).addMod(this)
 
     emit('pack-update');
   }
@@ -139,7 +144,7 @@ export class ModWrapper {
       status: 'Uploading',
       task: new Promise(async (resolve) => {
 
-        const adder = spawn(ipfsBin, [
+        const adder = spawn(kubo.path(), [
           'add',
             '-r',
             '-Q',
@@ -149,7 +154,7 @@ export class ModWrapper {
         ], {
           shell: true,
           env: {
-            IPFS_PATH: config.repopath
+            IPFS_PATH: config.repopath + "/kubo"
           }
         });
 
@@ -159,7 +164,7 @@ export class ModWrapper {
             if(progress) {
                 process.stdout.write(`\r Progress: ${progress}%`);
                 modTask.progress = progress
-                emit('pack-update');
+                // emit('pack-update');
             }
         });
 
@@ -171,14 +176,14 @@ export class ModWrapper {
     }
 
     tasks.push(modTask)
-    emit('pack-update');
+    // emit('pack-update');
 
     const hash = await modTask.task as string
     console.log(`Mod hash: ${hash}`)
     this.mod.cid = hash
     modTask.status = 'Done'
 
-    this.addTo("Installed")
+    // this.addTo("Installed")
     this.addTo("Orbit")
     this.addTo("Cluster")
 
@@ -259,6 +264,7 @@ export class ModWrapper {
 
 export function loadSources() {
   for(let source of config.sources) {
+    console.log("Source: ", source)
     getSource(source)
   }
 }
